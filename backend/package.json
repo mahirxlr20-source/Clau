@@ -1,9 +1,9 @@
 {
-  "name": "clau-backend",
+  "name": "tabula-backend",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "API for the Clau mobile app: accounts, saved progress and SSLCommerz subscriptions",
+  "description": "API for the tabula app: accounts, saved planner progress and SSLCommerz subscriptions",
   "engines": {
     "node": ">=22.13"
   },

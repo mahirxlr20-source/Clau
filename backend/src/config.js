@@ -26,17 +26,17 @@ export function loadConfig(env = process.env) {
   return {
     isProduction,
     port,
-    databasePath: env.DATABASE_PATH || './data/clau.db',
+    databasePath: env.DATABASE_PATH || './data/tabula.db',
     // Public URL SSLCommerz (and the phone's browser) can reach, e.g. https://api.example.com
     publicBaseUrl: (env.PUBLIC_BASE_URL || `http://localhost:${port}`).replace(/\/+$/, ''),
     jwtSecret,
     accessTokenTtl: env.ACCESS_TOKEN_TTL || '15m',
     refreshTokenTtlDays: Number(env.REFRESH_TOKEN_TTL_DAYS || 60),
-    maxProgressBytes: Number(env.MAX_PROGRESS_BYTES || 256 * 1024),
+    maxProgressBytes: Number(env.MAX_PROGRESS_BYTES || 2 * 1024 * 1024),
     // Only needed for the web build; native apps don't send CORS requests.
     corsOrigins: list(env.CORS_ORIGINS, []),
     // Where the payment result page may send the user back to (the app's deep link scheme).
-    appRedirectPrefixes: list(env.APP_REDIRECT_PREFIXES, ['clau://', 'exp://', 'exps://']),
+    appRedirectPrefixes: list(env.APP_REDIRECT_PREFIXES, ['tabula://', 'exp://', 'exps://']),
     sslcommerz: {
       storeId: env.SSLCOMMERZ_STORE_ID || '',
       storePassword: env.SSLCOMMERZ_STORE_PASSWORD || '',

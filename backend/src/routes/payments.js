@@ -15,7 +15,7 @@ function withParams(base, params) {
 }
 
 const MESSAGES = {
-  PAID: ['Payment successful', 'Your Premium subscription is active.'],
+  PAID: ['Payment successful', 'Premium is on for your tabula account.'],
   REVIEW: ['Payment received', 'Your payment is being reviewed. Premium will activate once it is approved.'],
   PENDING: ['Payment processing', 'We are confirming your payment. Return to the app to check its status.'],
   FAILED: ['Payment failed', 'Your payment did not go through. No subscription was activated.'],
@@ -36,9 +36,9 @@ function resultPage(res, payment, status) {
     .set('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'")
     .send(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${escapeHtml(title)}</title>
-<style>body{font-family:system-ui,sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0;padding:16px;background:#f6f7fb;color:#111}
-main{max-width:420px;text-align:center}a{display:inline-block;margin-top:16px;padding:12px 20px;border-radius:10px;background:#4f46e5;color:#fff;text-decoration:none;font-weight:600}</style>
-</head><body><main><h1>${escapeHtml(title)}</h1><p>${escapeHtml(body)}</p>
+<style>body{font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0;padding:16px;background:#F7F2E8;color:#2B2520}
+main{max-width:420px;text-align:center}h1{font-family:Georgia,"Times New Roman",serif;font-size:30px;letter-spacing:-.01em;margin:0 0 6px}.ul{width:110px;height:5px;margin:0 auto 16px;border-radius:3px;background:#F2A900}p{line-height:1.5}.brand{font-family:Georgia,serif;font-weight:700;font-size:20px;margin-bottom:28px}a{display:inline-block;margin-top:16px;padding:12px 22px;border-radius:999px;background:#2B2520;color:#fff;text-decoration:none;font-weight:600}</style>
+</head><body><main><div class="brand">tabula</div><h1>${escapeHtml(title)}</h1><div class="ul"></div><p>${escapeHtml(body)}</p>
 ${target ? `<a href="${t}">Return to the app</a><script>setTimeout(function(){location.href=${JSON.stringify(target).replace(/</g, '\\u003c')}},300)</script>` : ''}
 </main></body></html>`);
 }

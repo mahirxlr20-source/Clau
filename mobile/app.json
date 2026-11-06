@@ -1,34 +1,47 @@
 {
   "expo": {
-    "name": "Clau",
-    "slug": "clau",
+    "name": "tabula",
+    "slug": "tabula",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.clau.app"
+      "bundleIdentifier": "bd.tabula.app"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#F2A900",
         "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.clau.app"
+      "package": "bd.tabula.app"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "name": "tabula"
     },
-    "scheme": "clau",
+    "scheme": "tabula",
     "plugins": [
       "expo-router",
       "expo-secure-store",
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-font",
+      "expo-sharing",
+      "expo-document-picker",
+      "expo-asset",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 180,
+          "backgroundColor": "#F7F2E8"
+        }
+      ]
     ],
+    "backgroundColor": "#F7F2E8",
     "extra": {
       "apiUrl": "http://localhost:4000"
     }

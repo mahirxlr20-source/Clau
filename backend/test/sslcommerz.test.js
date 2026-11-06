@@ -70,7 +70,7 @@ it('runs a full checkout through the real SSLCommerz client', async () => {
   const checkout = await fetch(`${api}/subscriptions/checkout`, {
     method: 'POST',
     headers: auth,
-    body: JSON.stringify({ planId: 'yearly', phone: '01711111111', appRedirectUrl: 'clau://payment-result' }),
+    body: JSON.stringify({ planId: 'yearly', phone: '01711111111', appRedirectUrl: 'tabula://payment-result' }),
   }).then((r) => r.json());
   assert.match(checkout.gatewayUrl, /^https:\/\/gw\.test\/pay\//);
   assert.equal(seen.init.contentType, 'application/x-www-form-urlencoded');

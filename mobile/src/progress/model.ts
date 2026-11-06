@@ -1,26 +1,28 @@
-// The shape of a user's saved progress. The server stores it as an opaque JSON
-// object, so you can change this to fit your app (levels, lessons, settings...).
-// Keep new fields optional or give them defaults below so older saves still load.
-
-export type Task = { id: string; title: string; done: boolean };
+// What is saved to the user's account: every Tabula planner they have opened, with
+// everything typed into it, plus which planner and which tab they were on.
+import type { PlannerState } from '../planners/types';
 
 export type AppProgress = {
-  /** Screen the user was on, so the app can reopen it after the next login. */
+  /** The tab the user was on, so the app reopens it after the next login. */
   lastRoute: string;
-  tasks: Task[];
-  notes: string;
+  /** The planner (e.g. "bracu-cse") the user is working in. */
+  activePlanner: string | null;
+  /** One saved state per planner, in the same shape as the HTML planner's own backup. */
+  planners: Record<string, PlannerState>;
 };
 
 export const DEFAULT_PROGRESS: AppProgress = {
-  lastRoute: '/',
-  tasks: [],
-  notes: '',
+  lastRoute: '/home',
+  activePlanner: null,
+  planners: {},
 };
 
 /** Fills in defaults for fields missing from older saves. */
 export function normalizeProgress(data: Partial<AppProgress> | null | undefined): AppProgress {
-  return { ...DEFAULT_PROGRESS, ...(data ?? {}) };
+  const d = data ?? {};
+  return {
+    lastRoute: typeof d.lastRoute === 'string' ? d.lastRoute : DEFAULT_PROGRESS.lastRoute,
+    activePlanner: d.activePlanner ?? null,
+    planners: d.planners && typeof d.planners === 'object' ? d.planners : {},
+  };
 }
-
-/** Free accounts are limited to this many tasks; Premium is unlimited. */
-export const FREE_TASK_LIMIT = 5;

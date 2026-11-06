@@ -13,6 +13,6 @@ if (!gateway.configured) {
 
 createApp({ db, config, gateway }).listen(config.port, () => {
   console.log(
-    `Clau API on :${config.port} (public ${config.publicBaseUrl}, SSLCommerz ${config.sslcommerz.sandbox ? 'sandbox' : 'LIVE'})`,
+    `tabula API on :${config.port} (public ${config.publicBaseUrl}, SSLCommerz ${config.sslcommerz.sandbox ? 'sandbox' : 'LIVE'})`,
   );
 });

@@ -17,7 +17,7 @@ export function getSubscription(db, userId) {
 }
 
 export function newTranId() {
-  return `CLAU-${Date.now().toString(36)}-${randomBytes(6).toString('hex')}`.toUpperCase();
+  return `TABULA-${Date.now().toString(36)}-${randomBytes(6).toString('hex')}`.toUpperCase();
 }
 
 /**

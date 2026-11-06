@@ -1,9 +1,11 @@
 import { Link } from 'expo-router';
 import { useState } from 'react';
-import { Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, Card, colors, ErrorText, Field, Muted, Screen, Title } from '../components/ui';
+import { Text, TextInput } from 'react-native';
+import { authInput, AuthScreen } from '../components/AuthScreen';
+import { Field } from '../components/controls';
+import { Btn, t } from '../components/tabula';
 import { useAuth } from '../context/AuthContext';
+import { colors, fonts } from '../theme';
 
 export default function SignIn() {
   const { signIn } = useAuth();
@@ -25,38 +27,42 @@ export default function SignIn() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top']}>
-      <Screen>
-        <Title>Welcome back</Title>
-        <Muted>Sign in to pick up where you left off.</Muted>
-        <Card>
-          <Field
-            label="Email"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            autoComplete="email"
-            keyboardType="email-address"
-            textContentType="emailAddress"
-          />
-          <Field
-            label="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoComplete="current-password"
-            textContentType="password"
-            onSubmitEditing={submit}
-          />
-          <ErrorText>{error}</ErrorText>
-          <Button title="Sign in" onPress={submit} loading={loading} disabled={!email || !password} />
-        </Card>
-        <Link href="/sign-up" replace>
-          <Text style={{ color: colors.primary, fontWeight: '600', textAlign: 'center' }}>
-            New here? Create an account
-          </Text>
+    <AuthScreen
+      title="Welcome back"
+      lead="Sign in to pick up where you left off."
+      footer={
+        <Link href="/sign-up" replace style={{ alignSelf: 'center', marginTop: 4 }}>
+          <Text style={{ fontFamily: fonts.sansSemi, color: colors.ink, textDecorationLine: 'underline' }}>New here? Create an account</Text>
         </Link>
-      </Screen>
-    </SafeAreaView>
+      }
+    >
+      <Field label="Email">
+        <TextInput
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          autoComplete="email"
+          keyboardType="email-address"
+          textContentType="emailAddress"
+          style={authInput}
+          placeholderTextColor={colors.placeholder}
+          accessibilityLabel="Email"
+        />
+      </Field>
+      <Field label="Password">
+        <TextInput
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          autoComplete="current-password"
+          textContentType="password"
+          onSubmitEditing={submit}
+          style={authInput}
+          accessibilityLabel="Password"
+        />
+      </Field>
+      {error ? <Text style={[t.small, { color: colors.bad, marginBottom: 8 }]}>{error}</Text> : null}
+      <Btn title="Sign in" onPress={submit} loading={loading} disabled={!email || !password} />
+    </AuthScreen>
   );
 }

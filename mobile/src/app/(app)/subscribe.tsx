@@ -1,26 +1,33 @@
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Button, Card, colors, ErrorText, Field, Loading, Muted, Screen, Title } from '../../components/ui';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Field, Input } from '../../components/controls';
+import { Loading } from '../../components/Loading';
+import { Btn, Callout, Card, H1, Lead, MarkerUnderline, Small, t } from '../../components/tabula';
 import { useAuth } from '../../context/AuthContext';
 import { api, PaymentStatus, Plan } from '../../lib/api';
 import { payWithSslCommerz } from '../../lib/payments';
+import { fmtDate } from '../../planners/formula';
+import { colors, fonts } from '../../theme';
 
 const RESULT_TEXT: Record<PaymentStatus, string> = {
-  PAID: 'Payment successful. Premium is active!',
-  REVIEW: 'Payment received and under review. Premium activates once it is approved.',
+  PAID: 'Payment successful - Premium is on.',
+  REVIEW: 'Payment received and under review. Premium switches on once it is approved.',
   PENDING: 'Your payment is still processing. Check back in a minute.',
-  FAILED: 'The payment failed. You have not been charged.',
+  FAILED: 'The payment did not go through. You have not been charged.',
   CANCELLED: 'Payment cancelled.',
 };
 
-function formatDate(iso: string | null) {
-  return iso ? new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '';
-}
+const INCLUDED = [
+  ['Money', "the semester bill at your university's rates and every fee date, counting down"],
+  ['Semester', 'deadlines, the weekly routine with clash checks, and the semester pages'],
+  ['Toolkit', "your department's guides, logs and calculators"],
+  ['Paper', 'the Excel tracker, your printed degree map and assignment cover pages'],
+];
 
 export default function Subscribe() {
   const { subscription, setSubscription } = useAuth();
   const [plans, setPlans] = useState<Plan[] | null>(null);
-  const [selected, setSelected] = useState<string>('monthly');
+  const [selected, setSelected] = useState('monthly');
   const [phone, setPhone] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -51,84 +58,57 @@ export default function Subscribe() {
   if (!plans && !error) return <Loading />;
 
   return (
-    <Screen>
-      <Title>Premium</Title>
+    <ScrollView style={{ backgroundColor: colors.parchment }} contentContainerStyle={{ padding: 16, paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+      <H1>Premium</H1>
+      <MarkerUnderline width={110} />
       {subscription.active ? (
-        <Card>
-          <Text style={styles.active}>Premium is active</Text>
-          <Muted>
-            Your access runs until {formatDate(subscription.currentPeriodEnd)}. Paying again adds time on top of
-            that.
-          </Muted>
-        </Card>
+        <Callout title="Premium is on">
+          <Text style={[t.body, { marginBottom: 0 }]}>
+            Until {fmtDate(subscription.currentPeriodEnd?.slice(0, 10))}. Paying again adds the time on top.
+          </Text>
+        </Callout>
       ) : (
-        <Muted>Unlimited tasks and support future features. Pay securely with card, mobile banking or internet banking via SSLCommerz.</Muted>
+        <Lead>The working tools of every planner. Your Degree map, CGPA and Rules stay free.</Lead>
       )}
 
-      {plans?.map((plan) => (
-        <Pressable
-          key={plan.id}
-          onPress={() => setSelected(plan.id)}
-          accessibilityRole="radio"
-          aria-checked={selected === plan.id}
-          style={[styles.plan, selected === plan.id && styles.planOn]}
-        >
-          <View style={{ flex: 1 }}>
-            <Text style={styles.planName}>{plan.name}</Text>
-            <Muted>{plan.durationDays} days of Premium</Muted>
-          </View>
-          <Text style={styles.price}>
-            ৳{Number(plan.amount).toLocaleString()} <Text style={styles.currency}>{plan.currency}</Text>
+      <Card tone="linen">
+        {INCLUDED.map(([k, v]) => (
+          <Text key={k} style={[t.body, { marginBottom: 6 }]}>
+            <Text style={{ fontFamily: fonts.sansBold }}>{k}</Text> - {v}
           </Text>
-        </Pressable>
-      ))}
+        ))}
+      </Card>
+
+      {plans?.map((plan) => {
+        const on = selected === plan.id;
+        return (
+          <Pressable key={plan.id} onPress={() => setSelected(plan.id)} accessibilityRole="radio" aria-checked={on} style={[s.plan, on && s.planOn]}>
+            <View style={{ flex: 1 }}>
+              <Text style={s.planName}>{plan.id === 'yearly' ? 'A year' : 'A month'}</Text>
+              <Small>{plan.durationDays} days of Premium, paid once</Small>
+            </View>
+            <Text style={s.price}>Tk {Number(plan.amount).toLocaleString('en-US')}</Text>
+          </Pressable>
+        );
+      })}
 
       <Card>
-        <Field
-          label="Mobile number"
-          value={phone}
-          onChangeText={setPhone}
-          keyboardType="phone-pad"
-          autoComplete="tel"
-          textContentType="telephoneNumber"
-          placeholder="01XXXXXXXXX"
-        />
-        <Muted>Required by the payment gateway for the receipt.</Muted>
-        <ErrorText>{error}</ErrorText>
-        {result && (
-          <Text style={{ color: result === 'PAID' ? colors.success : colors.text, fontWeight: '600' }}>
-            {RESULT_TEXT[result]}
-          </Text>
-        )}
-        <Button
-          title={subscription.active ? 'Extend Premium' : 'Pay with SSLCommerz'}
-          onPress={pay}
-          loading={busy}
-          disabled={!plans || phone.replace(/\D/g, '').length < 6}
-        />
+        <Field label="Mobile number">
+          <Input value={phone} onLive={setPhone} keyboardType="phone-pad" autoComplete="tel" textContentType="telephoneNumber" placeholder="01XXXXXXXXX" />
+        </Field>
+        <Small style={{ marginBottom: 10 }}>SSLCommerz asks for it for the receipt. Pay by card, bKash, Nagad, Rocket or internet banking on their secure page.</Small>
+        {error ? <Text style={[t.small, { color: colors.bad, marginBottom: 8 }]}>{error}</Text> : null}
+        {result ? <Text style={[t.body, { fontFamily: fonts.sansSemi, color: result === 'PAID' ? colors.ok : colors.ink }]}>{RESULT_TEXT[result]}</Text> : null}
+        <Btn title={subscription.active ? 'Extend Premium' : 'Pay with SSLCommerz'} onPress={pay} loading={busy} disabled={!plans || phone.replace(/\D/g, '').length < 6} />
       </Card>
-      <Muted>
-        Plans are prepaid and do not renew automatically. We'll never store your card details: payment happens on
-        SSLCommerz's secure page.
-      </Muted>
-    </Screen>
+      <Small>Prepaid: nothing renews on its own, and we never see your card - the payment happens on SSLCommerz&apos;s page.</Small>
+    </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
-  active: { fontSize: 18, fontWeight: '700', color: colors.success },
-  plan: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    padding: 16,
-    borderRadius: 14,
-    borderWidth: 2,
-    borderColor: colors.border,
-    backgroundColor: colors.card,
-  },
-  planOn: { borderColor: colors.primary },
-  planName: { fontSize: 17, fontWeight: '700', color: colors.text },
-  price: { fontSize: 20, fontWeight: '700', color: colors.text },
-  currency: { fontSize: 12, color: colors.muted },
+const s = StyleSheet.create({
+  plan: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16, borderRadius: 14, borderWidth: 2, borderColor: colors.rule, backgroundColor: colors.paper, marginBottom: 10 },
+  planOn: { borderColor: colors.ink },
+  planName: { fontFamily: fonts.serif, fontSize: 18, color: colors.ink },
+  price: { fontFamily: fonts.serif, fontSize: 22, color: colors.ink },
 });

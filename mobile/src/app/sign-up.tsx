@@ -1,9 +1,11 @@
 import { Link } from 'expo-router';
 import { useState } from 'react';
-import { Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, Card, colors, ErrorText, Field, Muted, Screen, Title } from '../components/ui';
+import { Text, TextInput } from 'react-native';
+import { authInput, AuthScreen } from '../components/AuthScreen';
+import { Field } from '../components/controls';
+import { Btn, t } from '../components/tabula';
 import { useAuth } from '../context/AuthContext';
+import { colors, fonts } from '../theme';
 
 export default function SignUp() {
   const { signUp } = useAuth();
@@ -27,40 +29,46 @@ export default function SignUp() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top']}>
-      <Screen>
-        <Title>Create your account</Title>
-        <Muted>Your progress is saved to your account, so you can continue on any device.</Muted>
-        <Card>
-          <Field label="Name" value={name} onChangeText={setName} autoComplete="name" textContentType="name" />
-          <Field
-            label="Email"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            autoComplete="email"
-            keyboardType="email-address"
-            textContentType="emailAddress"
-          />
-          <Field
-            label="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoComplete="new-password"
-            textContentType="newPassword"
-            placeholder="At least 8 characters"
-            onSubmitEditing={submit}
-          />
-          <ErrorText>{error}</ErrorText>
-          <Button title="Create account" onPress={submit} loading={loading} disabled={!name || !email || !password} />
-        </Card>
-        <Link href="/sign-in" replace>
-          <Text style={{ color: colors.primary, fontWeight: '600', textAlign: 'center' }}>
-            Already have an account? Sign in
-          </Text>
+    <AuthScreen
+      title="Real plans, real numbers."
+      lead="Make an account and your planner is saved as you go - sign in on any phone and carry on."
+      footer={
+        <Link href="/sign-in" replace style={{ alignSelf: 'center', marginTop: 4 }}>
+          <Text style={{ fontFamily: fonts.sansSemi, color: colors.ink, textDecorationLine: 'underline' }}>Already have an account? Sign in</Text>
         </Link>
-      </Screen>
-    </SafeAreaView>
+      }
+    >
+      <Field label="Name">
+        <TextInput value={name} onChangeText={setName} autoComplete="name" textContentType="name" style={authInput} accessibilityLabel="Name" />
+      </Field>
+      <Field label="Email">
+        <TextInput
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          autoComplete="email"
+          keyboardType="email-address"
+          textContentType="emailAddress"
+          style={authInput}
+          accessibilityLabel="Email"
+        />
+      </Field>
+      <Field label="Password">
+        <TextInput
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          autoComplete="new-password"
+          textContentType="newPassword"
+          placeholder="At least 8 characters"
+          placeholderTextColor={colors.placeholder}
+          onSubmitEditing={submit}
+          style={authInput}
+          accessibilityLabel="Password"
+        />
+      </Field>
+      {error ? <Text style={[t.small, { color: colors.bad, marginBottom: 8 }]}>{error}</Text> : null}
+      <Btn title="Create account" onPress={submit} loading={loading} disabled={!name || !email || !password} />
+    </AuthScreen>
   );
 }

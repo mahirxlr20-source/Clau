@@ -1,19 +1,21 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Text } from 'react-native';
-import { Button, Card, colors, Loading, Muted, Screen, Title } from '../../components/ui';
+import { ScrollView, Text } from 'react-native';
+import { Loading } from '../../components/Loading';
+import { Btn, Card, H1, MarkerUnderline, Small, t } from '../../components/tabula';
 import { useAuth } from '../../context/AuthContext';
 import { PaymentStatus } from '../../lib/api';
 import { waitForPayment } from '../../lib/payments';
+import { colors } from '../../theme';
 
-// Opened by the deep link clau://payment-result?tranId=... when the OS hands the
+// Opened by the deep link tabula://payment-result?tranId=... when the OS hands the
 // payment redirect to the app directly instead of to the in-app browser session.
 const TEXT: Record<PaymentStatus, [string, string]> = {
-  PAID: ['Payment successful', 'Premium is now active on your account.'],
-  REVIEW: ['Payment under review', 'Premium will activate once the payment is approved.'],
+  PAID: ['Payment successful', 'Premium is on for your account.'],
+  REVIEW: ['Payment under review', 'Premium switches on once the payment is approved.'],
   PENDING: ['Still processing', 'We are confirming your payment. Check again in a minute.'],
-  FAILED: ['Payment failed', 'No subscription was activated.'],
-  CANCELLED: ['Payment cancelled', 'No subscription was activated.'],
+  FAILED: ['Payment failed', 'Nothing was charged and Premium was not switched on.'],
+  CANCELLED: ['Payment cancelled', 'Nothing was charged.'],
 };
 
 export default function PaymentResult() {
@@ -37,13 +39,14 @@ export default function PaymentResult() {
   const [title, body] = status ? TEXT[status] : ['Something went wrong', error];
 
   return (
-    <Screen>
+    <ScrollView style={{ backgroundColor: colors.parchment }} contentContainerStyle={{ padding: 16 }}>
+      <H1>{title}</H1>
+      <MarkerUnderline width={110} />
       <Card>
-        <Title>{title}</Title>
-        <Text style={{ color: status === 'PAID' ? colors.success : colors.text }}>{body}</Text>
-        {tranId && <Muted>Reference: {tranId}</Muted>}
+        <Text style={[t.body, { color: status === 'PAID' ? colors.ok : colors.ink }]}>{body}</Text>
+        {tranId ? <Small>Reference: {tranId}</Small> : null}
       </Card>
-      <Button title="Continue" onPress={() => router.replace('/')} />
-    </Screen>
+      <Btn title="Back to my planner" onPress={() => router.replace('/')} />
+    </ScrollView>
   );
 }

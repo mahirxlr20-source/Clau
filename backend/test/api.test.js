@@ -74,7 +74,7 @@ async function checkout(token, planId = 'monthly') {
   const res = await api('/subscriptions/checkout', {
     method: 'POST',
     token,
-    body: { planId, phone: '01700000000', appRedirectUrl: 'clau://payment-result' },
+    body: { planId, phone: '01700000000', appRedirectUrl: 'tabula://payment-result' },
   });
   assert.equal(res.status, 201, res.text);
   return res.body.tranId;
@@ -181,7 +181,7 @@ describe('subscriptions', () => {
       api('/payments/sslcommerz/ipn', { method: 'POST', form: { tran_id: tranId, val_id: `VAL-${tranId}`, status: 'VALID' } }),
     ]);
     assert.match(page.text, /Payment successful/);
-    assert.match(page.text, /clau:\/\/payment-result\?status=paid&amp;tranId=/);
+    assert.match(page.text, /tabula:\/\/payment-result\?status=paid&amp;tranId=/);
 
     const sub = (await api('/subscriptions/me', { token })).body.subscription;
     assert.equal(sub.active, true);
